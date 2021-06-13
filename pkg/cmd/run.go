@@ -3,18 +3,17 @@ package cmd
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kayes-shawon/go-gin/pkg/api"
-	"github.com/kayes-shawon/go-gin/pkg/middleware"
 )
 
 func Restricted(app *gin.Engine)  {
-	authGroup := app.Group("api/v1", middleware.Auth)
-	studentGroup := authGroup.Group("student")
+	//authGroup := app.Group("api/v1", middleware.Auth)
+	//studentGroup := authGroup.Group("student")
 	{
-		studentGroup.POST("/create", api.CreateStudent)
-		studentGroup.GET("/list", api.StudentList)
-		studentGroup.GET("/:id", api.StudentDetails)
-		studentGroup.PUT("/update/:id", api.UpdateStudent)
-		studentGroup.PUT("/delete/:id", api.DeleteStudent)
+		//studentGroup.POST("/create", api.CreateStudent)
+		//studentGroup.GET("/list", api.StudentList)
+		//studentGroup.GET("/:id", api.StudentDetails)
+		//studentGroup.PUT("/update/:id", api.UpdateStudent)
+		//studentGroup.PUT("/delete/:id", api.DeleteStudent)
 	}
 }
 
@@ -32,7 +31,7 @@ func RunServer() {
 	app := gin.New()
 
 	UnRestricted(app)
-	Restricted(app)
+	//Restricted(app)
 
 	app.Run(":8080")
 }
