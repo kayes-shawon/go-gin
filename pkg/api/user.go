@@ -36,6 +36,13 @@ func CreateUser(c *gin.Context) {
 }
 
 func UserLogin(c *gin.Context) {
+	user := &models.User{}
+	_ = c.BindJSON(&user)
+	dbCon := db.ConnectDB()
+	err := dbCon.Model(user).Where("user_name = ?", user.UserName).Select()
+	if err != nil {
+		//return err
+	}
 
 }
 
