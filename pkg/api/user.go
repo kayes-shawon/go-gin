@@ -6,6 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/kayes-shawon/go-gin/pkg/db"
 	"github.com/kayes-shawon/go-gin/pkg/models"
+	"github.com/kayes-shawon/go-gin/pkg/utils"
+	"net/http"
 )
 
 func CreateUser(c *gin.Context) {
@@ -39,10 +41,25 @@ func UserLogin(c *gin.Context) {
 	user := &models.User{}
 	_ = c.BindJSON(&user)
 	dbCon := db.ConnectDB()
+	password := user.Password
 	err := dbCon.Model(user).Where("user_name = ?", user.UserName).Select()
 	if err != nil {
-		//return err
+		return
 	}
+	encodedPassword := user.Password
+	valid, err := unchained.CheckPassword(password, encodedPassword)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	if !valid {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Password"})
+	}
+
+	payload := map[string]interface{} {
+		"username": user.UserName,
+	}
+	token, err := utils.Encode(payload)
 
 }
 
