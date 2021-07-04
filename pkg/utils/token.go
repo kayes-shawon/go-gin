@@ -62,19 +62,32 @@ func Encode(data map[string]interface{}) (token []byte, err error){
 
 }
 
-func Decode(token string) (bool error) {
-	publicKey := GetEdDSAPublicKey(GetKeyBytes("LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQUlrSm05OFpJaWdtaEY2RC9LYU9xZXMzSW83S0tHNWExTi9yODJvVGtvWEE9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo="))
-	claims, err := jwt.EdDSACheck([]byte(token), publicKey)
-	if err != nil {
-		return false, err
-	}
-
-	if !claims.Valid(time.Now()) {
-		return false, nil
-	}
-
-	if claims.Issuer != "core" {
-		return false, nil
-	}
-	return true, nil
+func RefreshTokenEncode(data map[string]interface{}) ([]byte, error) {
+	claims := &jwt.Claims{}
+	claims.Issuer = "upay"
+	claims.Audiences = []string{"cdfs"}
+	claims.NotBefore = jwt.NewNumericTime(time.Now().Add(-time.Second * 5).Round(time.Second))
+	claims.Issued = jwt.NewNumericTime(time.Now().Round(time.Second))
+	claims.Expires = jwt.NewNumericTime(time.Now().Add(3600*time.Second).Round(time.Second))
+	claims.ID = GetJTIId()
+	claims.Set = data
+	privateKey := GetEdDSAPrivateKey(GetKeyBytes("LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1DNENBUUF3QlFZREsyVndCQ0lFSUpVdWRzaCs5c1dGckNFdkJxYmxTYndTbmVXb2VZN2l0QlRRUWI0MHFhTS8KLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQo="))
+	return claims.EdDSASign(privateKey)
 }
+
+//func Decode(token string) (bool error) {
+//	publicKey := GetEdDSAPublicKey(GetKeyBytes("LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQUlrSm05OFpJaWdtaEY2RC9LYU9xZXMzSW83S0tHNWExTi9yODJvVGtvWEE9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo="))
+//	claims, err := jwt.EdDSACheck([]byte(token), publicKey)
+//	if err != nil {
+//		return false, err
+//	}
+//
+//	if !claims.Valid(time.Now()) {
+//		return false, nil
+//	}
+//
+//	if claims.Issuer != "core" {
+//		return false, nil
+//	}
+//	return true, nil
+//}

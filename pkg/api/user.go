@@ -61,6 +61,23 @@ func UserLogin(c *gin.Context) {
 	}
 	token, err := utils.Encode(payload)
 
+	if err != nil {
+		return
+	}
+
+	refreshToken, err := utils.RefreshTokenEncode(payload)
+	if err != nil {
+		return
+	}
+
+
+	data := map[string]interface{} {
+		"access_token" : string(token),
+		"refresh_token" : string(refreshToken),
+	}
+
+	c.JSON(200, data)
+
 }
 
 func UserLoginRefresh(c *gin.Context) {
