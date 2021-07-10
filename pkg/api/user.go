@@ -80,6 +80,18 @@ func UserLogin(c *gin.Context) {
 
 }
 
-func UserLoginRefresh(c *gin.Context) {
+type UserLoginRefreshRequest struct {
+	RefreshToken string `json:"refresh_token"`
+} 
 
+func UserLoginRefresh(c *gin.Context) {
+	refreshTokenReq := new(UserLoginRefreshRequest)
+
+	err := c.Bind(refreshTokenReq)
+	if err != nil {
+		return
+	}
+
+	c.JSON(200, refreshTokenReq.RefreshToken)
 }
+
